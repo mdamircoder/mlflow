@@ -127,6 +127,7 @@ def _save_model_with_class_artifacts_params(
     artifacts=None,
     conda_env=None,
     code_paths=None,
+    saved_code_subpath=None,
     mlflow_model=None,
     pip_requirements=None,
     extra_pip_requirements=None,
@@ -150,6 +151,7 @@ def _save_model_with_class_artifacts_params(
     :param code_paths: A list of local filesystem paths to Python file dependencies (or directories
                        containing file dependencies). These files are *prepended* to the system
                        path before the model is loaded.
+    :param saved_code_subpath: Sub folder which will store the local filesystem paths mentioned in ``code_paths``
     :param mlflow_model: The model configuration to which to add the ``mlflow.pyfunc`` flavor.
     """
     if mlflow_model is None:
@@ -194,11 +196,14 @@ def _save_model_with_class_artifacts_params(
             shutil.move(tmp_artifacts_dir.path(), os.path.join(path, saved_artifacts_dir_subpath))
         custom_model_config_kwargs[CONFIG_KEY_ARTIFACTS] = saved_artifacts_config
 
-    saved_code_subpath = None
+    # saved_code_subpath = None  # let user decide on this folder name 
     if code_paths is not None:
-        saved_code_subpath = "code"
+        if type(saved_code_subpath) != str:  # validation for "saved_code_subpath" 
+            saved_code_subpath = "code"
         for code_path in code_paths:
             _copy_file_or_tree(src=code_path, dst=path, dst_dir=saved_code_subpath)
+    else:
+        saved_code_subpath = None
 
     mlflow.pyfunc.add_to_model(
         model=mlflow_model,
