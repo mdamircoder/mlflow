@@ -196,7 +196,8 @@ def _save_model_with_class_artifacts_params(
 
     saved_code_subpath = None
     if code_paths is not None:
-        saved_code_subpath = "code"
+        # saved_code_subpath = "code"
+        saved_code_subpath = "codes"  # to avoid clash with Anaconda code.py 
         for code_path in code_paths:
             _copy_file_or_tree(src=code_path, dst=path, dst_dir=saved_code_subpath)
 
